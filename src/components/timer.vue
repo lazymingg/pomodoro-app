@@ -60,7 +60,7 @@ defineEmits(["changeTimer"]);
 
 const timeOptions = [
   { label: "Pomodoro", seconds: 25 * 60 * 1000 },
-  { label: "Short Break", seconds: 5 * 1 * 1000 },
+  { label: "Short Break", seconds: 5 * 60 * 1000 },
   { label: "Long Break", seconds: 15 * 60 * 1000 },
 ];
 
@@ -190,6 +190,7 @@ function count_down() {
   cursor: pointer;
   transition: background-color 0.3s ease;
   margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
 }
 
 .start-btn:hover {
