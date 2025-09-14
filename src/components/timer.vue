@@ -14,31 +14,44 @@ onMounted(() => {
 });
 
 function showNotification() {
-  const audio = new Audio('/alarm.wav'); // Đảm bảo bạn đã có file âm thanh ở public/alarm.mp3
+  // Sử dụng đường dẫn tương đối để hoạt động cả local và GitHub Pages
+  const audio = new Audio('./alarm.wav');
+  
+  // Xử lý lỗi nếu không load được audio
+  audio.onerror = () => {
+    console.warn("Could not load alarm sound");
+  };
 
-  if ("Notification" in window && Notification.permission === "granted") {
-    new Notification("⏰ Time's up!", {
-      body: "It's time to take a break or start the next session.",
-    });
-    audio.play();
-  } else if ("Notification" in window && Notification.permission === "default") {
-    console.log("Notification permission not yet granted.");
-    Notification.requestPermission().then(permission => {
-      if (permission === "granted") {
-        new Notification("⏰ Time's up!", {
-          body: "It's time to take a break or start the next session.",
-        });
-        audio.play();
-      } else {
-        console.log("Notification permission denied.");
-        alert("⏰ Time's up! It's time to take a break or start the next session.");
-        audio.play();
-      }
-    });
+  const message = "⏰ Time's up! It's time to take a break or start the next session.";
+
+  if ("Notification" in window) {
+    if (Notification.permission === "granted") {
+      new Notification("⏰ Time's up!", {
+        body: "It's time to take a break or start the next session.",
+        icon: './favicon.ico'
+      });
+      audio.play().catch(e => console.warn("Audio play failed:", e));
+    } else if (Notification.permission === "default") {
+      Notification.requestPermission().then(permission => {
+        if (permission === "granted") {
+          new Notification("⏰ Time's up!", {
+            body: "It's time to take a break or start the next session.",
+            icon: './favicon.ico'
+          });
+        } else {
+          alert(message);
+        }
+        audio.play().catch(e => console.warn("Audio play failed:", e));
+      });
+    } else {
+      // Permission denied
+      alert(message);
+      audio.play().catch(e => console.warn("Audio play failed:", e));
+    }
   } else {
-    console.log("Notifications blocked or not supported.");
-    alert("⏰ Time's up! It's time to take a break or start the next session.");
-    audio.play();
+    // Notifications not supported
+    alert(message);
+    audio.play().catch(e => console.warn("Audio play failed:", e));
   }
 }
 
